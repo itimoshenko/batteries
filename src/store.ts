@@ -2,7 +2,7 @@ import {
   atom, selector, selectorFamily,
 } from 'recoil';
 import { BatteryRecord } from './types';
-import { aggregateAndCalculateBatteries } from './utils/batteries';
+import { aggregateAndCalculateBatteriesByBatteryUsage, aggregateAndCalculateBatteries } from './utils/batteries';
 
 export const batteryRecordsState = atom<BatteryRecord[]>({
   key: 'batteryRecordsState',
@@ -14,7 +14,7 @@ export const aggregatedBatteriesQuery = selector({
   get: ({ get }) => {
     const batteryRecords = get(batteryRecordsState);
 
-    return aggregateAndCalculateBatteries(batteryRecords);
+    return aggregateAndCalculateBatteriesByBatteryUsage(batteryRecords);
   },
 });
 
@@ -48,5 +48,19 @@ export const devicesQuery = selectorFamily({
     const aggregatedBatteries = get(aggregatedBatteriesQuery);
 
     return Object.keys(aggregatedBatteries[academyId] || {});
+  },
+});
+
+export const deviceDataQuery = selectorFamily({
+  key: 'devicesQuery',
+  get: ({ academyId, deviceId }: { academyId: string, deviceId: string }) => ({ get }) => {
+    const batteryRecords = get(batteryRecordsState);
+
+    const aggregateData = aggregateAndCalculateBatteries(batteryRecords);
+
+    return (aggregateData[academyId]?.[deviceId] || []).map((record: BatteryRecord) => ({
+      batteryLevel: record.batteryLevel * 100,
+      date: record.timestamp.split('T')[0],
+    }));
   },
 });

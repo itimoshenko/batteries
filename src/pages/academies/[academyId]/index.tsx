@@ -1,7 +1,7 @@
 import React, {
-  memo,
+  memo, useCallback,
 } from 'react';
-import List from '@/components/List';
+import List, { ListItem } from '@/components/List';
 import { useDevices } from '@/hooks/useDevices';
 import { useRouter } from 'next/router';
 
@@ -11,6 +11,10 @@ const Devices: React.FC = memo(() => {
   const {
     devices, aggregatedBatteries, isLoading, error,
   } = useDevices(academyId);
+
+  const handleItemClick = useCallback((item: ListItem) => {
+    router.push(`/academies/${academyId}/${item.id}`);
+  }, [router, academyId]);
 
   return (
     <List
@@ -24,6 +28,7 @@ const Devices: React.FC = memo(() => {
         });
       })}
       error={error}
+      onItemClick={handleItemClick}
     />
   );
 });

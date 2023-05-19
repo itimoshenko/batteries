@@ -11,8 +11,7 @@ const aggregateBatteryRecords = (
   (r) => r.serialNumber,
 ]);
 
-// eslint-disable-next-line import/prefer-default-export
-export const aggregateAndCalculateBatteries = (batteryRecords: BatteryRecord[]) => {
+export const aggregateAndCalculateBatteriesByBatteryUsage = (batteryRecords: BatteryRecord[]) => {
   const aggregation = aggregateBatteryRecords(batteryRecords);
 
   return calculate(aggregation, (data: BatteryRecord[]) => {
@@ -26,4 +25,12 @@ export const aggregateAndCalculateBatteries = (batteryRecords: BatteryRecord[]) 
 
     return Number.isNaN(average) ? 'unknown' : average;
   }) as Record<string, Record<string, number | string>>;
+};
+
+export const aggregateAndCalculateBatteries = (batteryRecords: BatteryRecord[]) => {
+  const aggregation = aggregateBatteryRecords(batteryRecords);
+
+  return calculate(aggregation, (
+    data: BatteryRecord[],
+  ) => data) as Record<string, Record<string, BatteryRecord[]>>;
 };
